@@ -112,4 +112,4 @@ There is two models for flickr. Photoset and Photo. Both accept find and read me
         return $photos;
     }
 ##Licence
-Tis plugin is under MIT Licence
+This plugin is under MIT Licence
