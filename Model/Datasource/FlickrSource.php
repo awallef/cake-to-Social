@@ -24,6 +24,10 @@ class FlickrSource extends DataSource {
         }
     }
     
+    public function query($method, $params = array(), &$model = null) {
+        return unserialize($this->flickr->request($method, $params));
+    }
+    
     public function custom_cache_get( $reqhash ){
         return Cache::read($reqhash, $this->config['cache_config_name'] );
     }

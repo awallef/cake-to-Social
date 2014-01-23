@@ -87,8 +87,16 @@ class TumblrSource extends DataSource {
     
     public function __construct($config) {
         parent::__construct($config);
-        $this->sourceUrl = str_replace('%screen_name%', $this->config['screen_name'], $this->config['sourceUrl']); // 'http://demo.tumblr.com/api/read/json';
+        $this->sourceUrl = 'http://'.$this->config['screen_name'] .'.tumblr.com/api/read/json'; // 'http://demo.tumblr.com/api/read/json';
         $this->Http = new HttpSocket();
+        if ($this->config['cache_enabled']) {
+            Cache::config($this->config['cache_config_name'], array(
+                'engine' => 'File',
+                'duration' => $this->config['cache_duration'],
+                'path' => CACHE . $this->config['cache_folder'] . DS,
+                'prefix' => 'tumblr_'
+            ));
+        }
     }
 
     public function listSources() {
@@ -103,29 +111,53 @@ class TumblrSource extends DataSource {
         return 'COUNT';
     }
     
-    public function read($model, $queryData = array()) {
+    public function query($method, $params = array(), &$model = null ) {
+        
+        if ($this->config['cache_enabled']) {
+             
+             $hash = md5(serialize(array(
+                 'method' => $method,
+                 'params' => $params
+             )));
+             
+             $response = Cache::read($hash, $this->config['cache_config_name'] );
+             if (!$response) {
+                $response = $this->_request($method, $params);
+                Cache::write($hash, $response, $this->config['cache_config_name'] );
+             }
+             
+         }else{
+            $response = $this->_request($method, $params);
+         }
+        
+        return $response;
+    }
+    
+    protected function _request($method, $params = array(), &$model = null ) {
         
         //debug( $queryData );
         
         $query = array();
         
-        if ($queryData['fields'] === 'COUNT') {
-            return array(array(array('count' => $this->count)));
+        if( !empty( $params['fields'] ) ){
+            if ($params['fields'] === 'COUNT') {
+                return array(array(array('count' => $this->count)));
+            }
         }
         
-        if( !empty( $queryData['offset'] ) ){
-            $query['start'] = $queryData['offset'];
+        if( !empty( $params['offset'] ) ){
+            $query['start'] = $params['offset'];
         }
         
-        if( !empty( $queryData['limit'] ) ){
-            $query['num'] = $queryData['limit'];
+        if( !empty( $params['limit'] ) ){
+            $query['num'] = $params['limit'];
         }
         
-        $this->_createQuery($query, $queryData);
+        $this->_createQuery($query, $params);
         
         //debug($query);
         
-        //go get tweets
+        
         $results = $this->Http->get($this->sourceUrl, $query);
         //debug( $results );
         $results = substr($results->body, 22);
