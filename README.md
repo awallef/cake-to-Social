@@ -31,7 +31,7 @@ Download the project and `rename it Social`
 	git submodule update
 
 ##Config
-You need to add a few lines in database.php
+You need to add a few lines in database.php. ( Add only the service setting you need! )
 	
 	public $facebook = array(
         'datasource' => 'Social.FacebookSource',
