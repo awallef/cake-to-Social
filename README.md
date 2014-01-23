@@ -188,11 +188,11 @@ Use the plugin's models in your WhateverController.php
 
         	$data = $this->Youtube->query('videos',array(
             	'categories' => array(
-                	'Education',
-                	'Howto'
+                	'Education', // 'Education|Howto' => OR 
+                	'Howto' // 'Education','Howto' => AND
             	),
             	'keywords' => array(
-                	'all'
+                	'all' // same logic as categories
             	),
             	'q' => 'hello'
         	));
