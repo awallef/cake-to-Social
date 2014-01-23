@@ -5,16 +5,17 @@ this plugin for `cakePHP 2.x` offers models to connect your favourite social dat
 I ll add more models. Stay tuned 0_o
 
 ##Social site covered
-* Vimeo
-* Flickr
-* Youtube
-* Tumblr
 * Facebook
+* Flickr
+* Instrgam
+* Soundcloud
+* Tumblr
+* Vimeo
+* Youtube
  
 ##Coming soon
 
-* Instrgam
-* Soundcloud
+* Tripadvisor
 
 ##Download
 Download the project and `rename it Social`
@@ -31,24 +32,7 @@ Download the project and `rename it Social`
 ##Config
 You need to add a few lines in database.php
 	
-	public $vimeo = array(
-        'datasource' => 'Social.VimeoSource',
-        'database' => 'vimeodb',
-        'cache_enabled' => true,
-        'cache_config_name' => 'vimeo',
-        'cache_duration' => '+1 week',
-        'cache_folder' => 'social'
-    );
-    public $flickr = array(
-        'datasource' => 'Social.FlickrSource',
-        'database' => 'flickrdb',
-        'api_key' => 'api-secret',
-        'cache_enabled' => true,
-        'cache_config_name' => 'flickr',
-        'cache_duration' => '+1 week',
-        'cache_folder' => 'social'
-    );
-    public $facebook = array(
+	public $facebook = array(
         'datasource' => 'Social.FacebookSource',
         'database' => 'facebookdb',
         'app_id' => 'app-id',
@@ -59,12 +43,53 @@ You need to add a few lines in database.php
         'cache_duration' => '+1 day',
         'cache_folder' => 'social'
     );
+    
+    public $flickr = array(
+        'datasource' => 'Social.FlickrSource',
+        'database' => 'flickrdb',
+        'api_key' => 'api-key',
+        'cache_enabled' => true,
+        'cache_config_name' => 'flickr',
+        'cache_duration' => '+1 week',
+        'cache_folder' => 'social'
+    );
+    
+    public $instagram = array(
+        'datasource' => 'Social.InstagramSource',
+        'database' => 'instagramdb',
+        'token' => 'token',
+        'cache_enabled' => true,
+        'cache_config_name' => 'instgram',
+        'cache_duration' => '+1 week',
+        'cache_folder' => 'social'
+    );
+    
+    public $soundcloud = array(
+        'datasource' => 'Social.SoundcloudSource',
+        'database' => 'soundclouddb',
+        'app_id' => 'api-id',
+        'app_secret' => 'api-secret',
+        'cache_enabled' => true,
+        'cache_config_name' => 'soundcloud',
+        'cache_duration' => '+1 day',
+        'cache_folder' => 'social'
+    );
+    
     public $tumblr = array(
         'datasource' => 'Social.TumblrSource',
         'database' => 'tumblrdb',
         'screen_name' => 'screenname',
         'cache_enabled' => true,
         'cache_config_name' => 'tumblr',
+        'cache_duration' => '+1 week',
+        'cache_folder' => 'social'
+    );
+    
+    public $vimeo = array(
+        'datasource' => 'Social.VimeoSource',
+        'database' => 'vimeodb',
+        'cache_enabled' => true,
+        'cache_config_name' => 'vimeo',
         'cache_duration' => '+1 week',
         'cache_folder' => 'social'
     );
@@ -78,7 +103,6 @@ You need to add a few lines in database.php
         'cache_folder' => 'social'
     );
 
-if you enable caching, them create a folder in your tmp/cache dir.
 
 ##Load
 add this in your bootstrap.php
@@ -94,7 +118,15 @@ Use the plugin's models in your WhateverController.php
 
 	class WhateverController extends AppController {
 
-    	public $uses = array('Social.Facebook','Social.Flickr','Social.Tumblr','Social.Vimeo','Social.Youtube');
+    	public $uses = array(
+        	'Social.Facebook',
+        	'Social.Flickr',
+        	'Social.Instagram',
+        	'Social.Soundcloud',
+        	'Social.Tumblr',
+        	'Social.Vimeo',
+        	'Social.Youtube'
+    	);
     
     	public function facebook() {
 
@@ -105,10 +137,38 @@ Use the plugin's models in your WhateverController.php
     
     	public function flickr() {
 
-        	$data = $this->Flickr->query('flickr.photosets.getList',array('user_id' => '54944466@N03'));
+        	$data = $this->Flickr->query('flickr.photosets.getList',array(
+        		'user_id' => '54944466@N03'
+        	));
         	$this->set('data', $data);
         	$this->render('/Common/data');
-    }
+    	}
+    	
+    	public function instagram() {
+        
+        	// pass args 
+        	$data = $this->Instagram->query('users/search',array(
+        		'q' => 'toto'
+        	));
+        	debug( $data );
+        
+        	// when method needs a var, do as below
+        	$data = $this->Instagram->query('users/{user-id}/media/recent',array(
+            	'{user-id}' => '289149816'
+        	));
+        	$this->set('data', $data);
+        	$this->render('/Common/data');
+    	}
+    
+    	public function soundcloud() {
+        	
+        	$data = $this->Soundcloud->query('users/{user-id}/favorites',array(
+            	'{user-id}' => 'user9964656',
+            	'limit' => 10
+        	));
+        	$this->set('data', $data);
+        	$this->render('/Common/data');
+    	}
     
     	public function tumblr() {
         
