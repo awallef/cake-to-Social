@@ -30,6 +30,7 @@ Download the project and `rename it Social`
 
 ##Config
 You need to add a few lines in database.php
+	
 	public $vimeo = array(
         'datasource' => 'Social.VimeoSource',
         'database' => 'vimeodb',
