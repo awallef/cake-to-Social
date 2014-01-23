@@ -10,6 +10,7 @@ I ll add more models. Stay tuned 0_o
 * Instrgam
 * Soundcloud
 * Tumblr
+* Twitter
 * Vimeo
 * Youtube
  
@@ -85,6 +86,19 @@ You need to add a few lines in database.php
         'cache_folder' => 'social'
     );
     
+    public $twitter = array(
+        'datasource' => 'Social.TwitterSource',
+        'database' => 'twitterdb',
+        'oauth_access_token' => 'oauth_access_token',
+        'oauth_access_token_secret' => 'oauth_access_token_secret',
+        'consumer_key' => 'consumer_key',
+        'consumer_secret' => 'consumer_secret',
+        'cache_enabled' => true,
+        'cache_config_name' => 'twitter',
+        'cache_duration' => '+1 day',
+        'cache_folder' => 'social'
+    );
+    
     public $vimeo = array(
         'datasource' => 'Social.VimeoSource',
         'database' => 'vimeodb',
@@ -124,6 +138,7 @@ Use the plugin's models in your WhateverController.php
         	'Social.Instagram',
         	'Social.Soundcloud',
         	'Social.Tumblr',
+        	'Social.Twitter',
         	'Social.Vimeo',
         	'Social.Youtube'
     	);
@@ -176,7 +191,23 @@ Use the plugin's models in your WhateverController.php
         	$this->set('data', $data);
         	$this->render('/Common/data');
     	}
-    
+    	
+    	public function twitter() {
+        
+        	// pass args 
+        	$data = $this->Twitter->query('followers/ids',array(
+            	'screen_name' => 'awallef'
+        	));
+        	debug( $data );
+        
+        	// when method needs a var, do as below
+        	$data = $this->Twitter->query('statuses/show/{id}',array(
+            	'{id}' => '85377105348661250'
+        	));
+        	$this->set('data', $data);
+        	$this->render('/Common/data');
+    	}
+    	
     	public function vimeo() {
 
         	$data = $this->Vimeo->query('10042745',array('videos'));
