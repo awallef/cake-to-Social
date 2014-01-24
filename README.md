@@ -152,11 +152,22 @@ Use the plugin's models in your WhateverController.php
     
     	public function flickr() {
 
-        	$data = $this->Flickr->query('flickr.photosets.getList',array(
-        		'user_id' => '54944466@N03'
+        	$photosetlist = $this->Flickr->query(
+        		'flickr.photosets.getList',
+        		array('user_id' => '54944466@N03'
         	));
-        	$this->set('data', $data);
-        	$this->render('/Common/data');
+        	$photos = array();
+        	foreach( $photosetlist['photosets']['photoset'] as $list ){
+            	$p = $this->Flickr->query(
+            		'flickr.photosets.getPhotos',
+            		array('photoset_id' => $list['id']
+            	));
+            
+            	if( !empty($p['photoset']['photo']) ){
+                	$photos = array_merge($photos, $p['photoset']['photo'] );
+            	}
+        	}
+        	$this->set('photos', $photos);
     	}
     	
     	public function instagram() {
@@ -232,6 +243,23 @@ Use the plugin's models in your WhateverController.php
     	}
 
 	}
+
+##Helpers
+Find some helpers, more to come soon
+
+####flickr
+add Social.Flickr in your controller then in your view file:
+
+	<?php 
+	foreach( $photos as $image ){
+    	echo $this->Html->image(
+            $this->Flickr->thumbURL( $image),
+            // or $this->Flickr->photoURL( $image)
+            
+            array('alt' => $image['title'])
+    	);
+	}
+	?>
 
 
 ##Licence
