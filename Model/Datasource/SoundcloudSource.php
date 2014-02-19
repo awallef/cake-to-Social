@@ -10,7 +10,8 @@ class SoundcloudSource extends DataSource {
         parent::__construct($config);
         $this->Http = new HttpSocket();
         
-        App::import('Social.Vendor', 'soundcloud/Services/Soundcloud');
+        //App::import('Social.Vendor', 'soundcloud/Services/Soundcloud');
+        require_once APP . 'Plugin/Social/Vendor/soundcloud/Services/Soundcloud.php';
         $this->soundcloud = new Services_Soundcloud($this->config['app_id'],$this->config['app_secret']);
         
         if ($this->config['cache_enabled']) {
