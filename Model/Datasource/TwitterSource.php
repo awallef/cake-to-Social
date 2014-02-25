@@ -10,8 +10,7 @@ class TwitterSource extends DataSource {
         parent::__construct($config);
         $this->Http = new HttpSocket();
         
-        //App::import('Social.Vendor', 'twitter-api-php/TwitterAPIExchange');
-        require_once APP . 'Plugin/Social/Vendor/twitter-api-php/TwitterAPIExchange.php';
+        App::import('Social.Vendor', 'twitter-api-php/TwitterAPIExchange');
         $this->twitter = new TwitterAPIExchange(array(
             'oauth_access_token' => $this->config['oauth_access_token'],
             'oauth_access_token_secret' => $this->config['oauth_access_token_secret'],

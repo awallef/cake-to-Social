@@ -7,8 +7,7 @@ class FlickrSource extends DataSource {
     public function __construct($config = null) {
         parent::__construct($config);
         
-        //App::import('Social.Vendor', 'phpflickr/phpFlickr');
-        require_once APP . 'Plugin/Social/Vendor/phpflickr/phpFlickr.php';
+        App::import('Social.Vendor', 'phpflickr/phpFlickr');
         $this->flickr = new phpFlickr( $this->config['api_key'] );
         if ($this->config['cache_enabled']) {
             Cache::config($this->config['cache_config_name'], array(
