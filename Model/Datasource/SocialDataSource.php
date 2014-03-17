@@ -4,6 +4,8 @@ App::uses('HttpSocket', 'Network/Http');
 
 class SocialDataSource extends DataSource {
     
+    public $checkResponseStatus = true;
+    
     public $isConnected = false;
     
     public $cachePrefix = 'social_';
@@ -49,14 +51,20 @@ class SocialDataSource extends DataSource {
     
     public function _query( $method, $params = array() ){
         if( !$this->isConnected ){
-            $this->_createConnection();
-            $this->isConnected = true;
+            if( $this->_createConnection()){
+                $this->isConnected = true;
+                return $this->_request($method, $params);
+            }else{
+                return false;
+            }
+        }else{
+            return $this->_request($method, $params);
         }
-        return $this->_request($method, $params);
     }
     
     public function _createConnection(){
         $this->Http = new HttpSocket();
+        return true;
     }
 
     public function _request($method, $params) {
@@ -97,11 +105,13 @@ class SocialDataSource extends DataSource {
         } catch (Exception $e) {
             return $this->_error(-32300, $e->getMessage());
         }
-        if (!$this->Http->response['status']['code']) {
-            return $this->_error(-32300, __('Transport error - could not open socket', true));
-        }
-        if ($this->Http->response['status']['code'] != 200) {
-            return $this->_error(-32300, __('Transport error - HTTP status code was not 200', true));
+        if( $this->checkResponseStatus ){
+            if (!$this->Http->response['status']['code']) {
+                return $this->_error(-32300, __('Transport error - could not open socket', true));
+            }
+            if ($this->Http->response['status']['code'] != 200) {
+                return $this->_error(-32300, __('Transport error - HTTP status code was not 200', true));
+            }
         }
         return $this->_parseResponse($response->body);
     }
@@ -109,10 +119,7 @@ class SocialDataSource extends DataSource {
     protected function _error($number, $text) {
         $this->errno = $number;
         $this->error = $text;
-        return array(
-            'errno' => $number,
-            'error' => $text
-        );
+        return false;
     }
 
 }
