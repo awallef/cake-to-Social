@@ -15,7 +15,7 @@ $path_to_phpFlickr_class = "./";
 
 ob_start();
 require_once($path_to_phpFlickr_class . "phpFlickr.php");
-@unset($_SESSION['phpFlickr_auth_token']);
+unset($_SESSION['phpFlickr_auth_token']);
 
 if (isset($_SESSION['phpFlickr_auth_redirect']) && !empty($_SESSION['phpFlickr_auth_redirect'])) {
         $redirect = $_SESSION['phpFlickr_auth_redirect'];
